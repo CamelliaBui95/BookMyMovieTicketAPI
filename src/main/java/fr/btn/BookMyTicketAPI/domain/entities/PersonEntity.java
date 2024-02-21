@@ -25,6 +25,6 @@ public class PersonEntity {
     @Column(nullable = false)
     private String lastname;
 
-    @OneToMany(mappedBy = "person")
-    Set<MovieCrewEntity> movieCrew;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person")
+    private Set<MovieCrewEntity> movieCrew;
 }

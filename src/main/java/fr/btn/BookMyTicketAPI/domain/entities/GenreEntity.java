@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,4 +22,6 @@ public class GenreEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @ManyToMany(fetch= FetchType.LAZY, mappedBy = "movieGenres")
+    private Set<MovieEntity> movies;
 }

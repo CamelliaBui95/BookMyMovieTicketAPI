@@ -50,6 +50,6 @@ public class MovieEntity {
 
     private String bannerUrl;
 
-    @OneToMany(mappedBy = "movie")
-    Set<MovieCrewEntity> movieCrew;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "movie")
+    private Set<MovieCrewEntity> movieCrew;
 }

@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
@@ -21,7 +21,7 @@ public class MovieDto {
     private Long id;
     private String title;
     private String description;
-    private Date releasedDate;
+    private LocalDate releasedDate;
     private NationEntity nationEntity;
     private String bannerUrl;
     private int duration;

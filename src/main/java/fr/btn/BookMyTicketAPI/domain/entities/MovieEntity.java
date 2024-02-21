@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
@@ -24,9 +25,18 @@ public class MovieEntity {
     @Column(unique = true, nullable = false)
     private String title;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @Column(length = 2500)
+    private String description;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(nullable = false)
-    private Date releasedDate;
+    private LocalDate releasedDate;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "nationality")
+    private NationEntity nationEntity;
+
+    private String bannerUrl;
 
     @Column(nullable = false)
     private int duration;
@@ -39,16 +49,7 @@ public class MovieEntity {
             joinColumns = @JoinColumn(name="movie_id"),
             inverseJoinColumns = @JoinColumn(name="genre_id")
     )
-    private Set<GenreEntity> movieGenres;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "nationality")
-    private NationEntity nationEntity;
-
-    @Column(length = 2500)
-    private String description;
-
-    private String bannerUrl;
+    private Set<GenreEntity> genres;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "movie")
     private Set<MovieCrewEntity> movieCrew;

@@ -1,2 +1,3 @@
-<b>Name:</b> BookMyMovieTicketAPI
-<b>Description:</b> A Rest Api for movies and cinema ticket reservation management 
+Name: BookMyMovieTicketAPI
+<br/>
+Description: A Rest Api for movies and cinema ticket reservation management 

@@ -1,10 +1,13 @@
 package fr.btn.BookMyTicketAPI.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -20,6 +23,6 @@ public class GenreEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
-    /*@ManyToMany(fetch= FetchType.LAZY, mappedBy = "genres")
-    private Set<MovieEntity> movies;*/
+    @ManyToMany(fetch= FetchType.LAZY, mappedBy = "genres")
+    private Set<MovieEntity> movies;
 }

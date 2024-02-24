@@ -1,5 +1,6 @@
 package fr.btn.BookMyTicketAPI.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.btn.BookMyTicketAPI.domain.entities.MovieEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,5 +17,7 @@ import java.util.Set;
 public class GenreDto {
     private Long id;
     private String name;
-    private Set<MovieEntity> movies;
+
+    /*@JsonIgnore
+    private Set<MovieEntity> movies;*/
 }

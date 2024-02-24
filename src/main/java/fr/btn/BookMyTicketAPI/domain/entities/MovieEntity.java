@@ -50,6 +50,6 @@ public class MovieEntity {
     )
     private Set<GenreEntity> genres;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "movie")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "movie", cascade = CascadeType.ALL)
     private Set<MovieCrewEntity> movieCrew;
 }

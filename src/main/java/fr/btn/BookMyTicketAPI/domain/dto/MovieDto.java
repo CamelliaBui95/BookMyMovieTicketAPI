@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -20,10 +22,33 @@ public class MovieDto {
     private String title;
     private String description;
     private LocalDate releasedDate;
-    private NationEntity nationEntity;
+    private NationDto nationality;
     private String bannerUrl;
     private int duration;
     private int rating;
-    private Set<GenreEntity> genres;
-    private Set<MovieCrewEntity> movieCrew;
+
+    private List<GenreDto> genres;
+    private List<PersonDto> directors;
+    private List<PersonDto> stars;
+
+    public void addDirector(PersonDto personDto) {
+        if(directors == null)
+            directors = new ArrayList<>();
+
+        directors.add(personDto);
+    }
+
+    public void addStar(PersonDto personDto) {
+        if(stars == null)
+            stars = new ArrayList<>();
+
+        stars.add(personDto);
+    }
+
+    public void addGenre(GenreDto genreDto) {
+        if(genres == null)
+            genres = new ArrayList<>();
+
+        genres.add(genreDto);
+    }
 }

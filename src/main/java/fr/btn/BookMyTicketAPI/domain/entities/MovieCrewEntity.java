@@ -29,6 +29,6 @@ public class MovieCrewEntity {
     @JoinColumn(name = "person_id")
     private PersonEntity person;
 
-    @Column(length = 25, nullable = false)
+    @Column(length = 2, nullable = false)
     private Role role;
 }

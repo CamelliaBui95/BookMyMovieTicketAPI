@@ -5,9 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -31,9 +33,9 @@ public class MovieEntity {
     @Column(nullable = false)
     private LocalDate releasedDate;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "nationality")
-    private NationEntity nationEntity;
+    @ManyToOne
+    @JoinColumn(name = "nationality" )
+    private NationEntity nationality;
 
     private String bannerUrl;
 
@@ -50,6 +52,8 @@ public class MovieEntity {
     )
     private Set<GenreEntity> genres;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "movie", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "movie")
     private Set<MovieCrewEntity> movieCrew;
+
+
 }

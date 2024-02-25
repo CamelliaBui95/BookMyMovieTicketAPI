@@ -22,6 +22,9 @@ public class NationService implements ApiService<NationEntity, String> {
 
     @Override
     public NationEntity save(NationEntity nationEntity) {
+        if(doesExist(nationEntity.getCode()))
+            return findOne(nationEntity.getCode()).get();
+
         return nationRepository.save(nationEntity);
     }
 

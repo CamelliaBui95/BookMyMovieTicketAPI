@@ -1,13 +1,12 @@
 package fr.btn.BookMyTicketAPI.domain.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -22,4 +21,7 @@ public class NationEntity {
 
     @Column(nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "nationality")
+    private Set<MovieEntity> movies;
 }

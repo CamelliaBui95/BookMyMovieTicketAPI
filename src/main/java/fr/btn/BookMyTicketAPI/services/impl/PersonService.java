@@ -59,4 +59,5 @@ public class PersonService implements ApiService<PersonEntity, Long> {
     public Optional<PersonEntity> findByFirstnameAndLastname(String firstname, String lastname) {
         return personRepository.findByFirstnameAndLastname(firstname, lastname);
     }
+
 }

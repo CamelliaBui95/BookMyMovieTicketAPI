@@ -2,7 +2,7 @@ package fr.btn.BookMyTicketAPI.enums;
 
 public enum Role {
     DIRECTOR("D"),
-    LEAD_ACTOR("LA");
+    LEAD_ACTOR("S");
 
     private String code;
 
@@ -12,5 +12,9 @@ public enum Role {
 
     public String getCode() {
         return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

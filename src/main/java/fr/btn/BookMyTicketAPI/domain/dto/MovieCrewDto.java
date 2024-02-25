@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MovieCrewDto {
     private MovieCrewKeyDto id;
-    private MovieEntity movie;
-    private PersonEntity person;
+    private MovieDto movie;
+    private PersonDto person;
     private Role role;
 }

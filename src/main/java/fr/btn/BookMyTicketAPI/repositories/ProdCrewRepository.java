@@ -1,12 +1,12 @@
 package fr.btn.BookMyTicketAPI.repositories;
 
-import fr.btn.BookMyTicketAPI.entities.GenreEntity;
+import fr.btn.BookMyTicketAPI.entities.ProdCrewEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface GenreRepository extends CrudRepository<GenreEntity, Long> {
-    Optional<GenreEntity> findByName(String name);
+public interface ProdCrewRepository extends CrudRepository<ProdCrewEntity, Long> {
+    Optional<ProdCrewEntity> findByName(String name);
 }

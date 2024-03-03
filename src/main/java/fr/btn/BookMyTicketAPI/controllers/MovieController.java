@@ -1,12 +1,18 @@
 package fr.btn.BookMyTicketAPI.controllers;
 
-import fr.btn.BookMyTicketAPI.domain.dto.MovieDto;
-import fr.btn.BookMyTicketAPI.domain.dto.PersonDto;
-import fr.btn.BookMyTicketAPI.domain.entities.*;
-import fr.btn.BookMyTicketAPI.domain.entities.embeddedKeys.MovieCrewKey;
+import fr.btn.BookMyTicketAPI.dto.MovieDto;
+import fr.btn.BookMyTicketAPI.dto.ProdCrewDto;
+import fr.btn.BookMyTicketAPI.entities.MovieEntity;
+import fr.btn.BookMyTicketAPI.entities.ProdCrewEntity;
+import fr.btn.BookMyTicketAPI.entities.ProdInfoEntity;
+import fr.btn.BookMyTicketAPI.entities.compositeKeys.ProductionPK;
 import fr.btn.BookMyTicketAPI.enums.Role;
-import fr.btn.BookMyTicketAPI.mappers.Mapper;
-import fr.btn.BookMyTicketAPI.services.impl.*;
+import fr.btn.BookMyTicketAPI.mappers.impl.MovieMapper;
+import fr.btn.BookMyTicketAPI.mappers.impl.ProdCrewMapper;
+import fr.btn.BookMyTicketAPI.services.impl.MovieService;
+import fr.btn.BookMyTicketAPI.services.impl.ProdCrewService;
+import fr.btn.BookMyTicketAPI.services.impl.ProdInfoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,85 +20,67 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
+@Tag(name="Movies")
 public class MovieController {
     private MovieService movieService;
-    private MovieCrewService movieCrewService;
-    private PersonService personService;
-    private GenreService genreService;
-    private NationService nationService;
-    private Mapper<MovieEntity, MovieDto> movieMapper;
-    private Mapper<PersonEntity, PersonDto> personMapper;
+    private MovieMapper movieMapper;
+    private ProdCrewService prodCrewService;
+    private ProdCrewMapper prodCrewMapper;
+    private ProdInfoService prodInfoService;
 
     public MovieController(MovieService movieService,
-                           MovieCrewService movieCrewService,
-                           PersonService personService,
-                           GenreService genreService,
-                           NationService nationService,
-                           Mapper<MovieEntity,MovieDto> movieMapper,
-                           Mapper<PersonEntity, PersonDto> personMapper) {
+                           MovieMapper movieMapper,
+                           ProdCrewService prodCrewService,
+                           ProdCrewMapper prodCrewMapper,
+                           ProdInfoService prodInfoService) {
         this.movieService = movieService;
-        this.movieCrewService = movieCrewService;
-        this.personService = personService;
-        this.genreService = genreService;
-        this.nationService = nationService;
         this.movieMapper = movieMapper;
-        this.personMapper = personMapper;
+        this.prodCrewService = prodCrewService;
+        this.prodCrewMapper = prodCrewMapper;
+        this.prodInfoService = prodInfoService;
     }
 
     @PostMapping("/movies")
-    public ResponseEntity<MovieDto> createMovie(@RequestBody MovieDto movieDto) {
-        if(movieDto == null)
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<MovieDto> post(@RequestBody MovieDto movieDto) {
+        if(movieDto == null || movieDto.getTitle().isEmpty())
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        MovieEntity newMovie = movieMapper.mapFrom(movieDto);
-
-        //Save or Update nationality
-        NationEntity nationEntity = newMovie.getNationality();
-        nationService.save(nationEntity);
-
+        MovieEntity newMovie = movieMapper.toEntity(movieDto);
         newMovie = movieService.save(newMovie);
 
-        Set<MovieCrewEntity> movieCrewEntitySet = new HashSet<>();
         MovieEntity finalNewMovie = newMovie;
-        movieDto.getDirectors().stream().forEach(personDto -> {
-            Optional<PersonEntity> savedPerson = personService.findOne(personDto.getId());
+        Set<ProdInfoEntity> prodInfoSet = new HashSet<>();
 
-            PersonEntity person;
-            if(savedPerson.isEmpty())
-                person = personService.save(personMapper.mapFrom(personDto));
-            else
-                person = savedPerson.get();
-
-            MovieCrewKey key = new MovieCrewKey(finalNewMovie.getId(),person.getId());
-            MovieCrewEntity movieCrewEntity = new MovieCrewEntity(key, finalNewMovie, person, Role.DIRECTOR);
-
-            movieCrewEntity = movieCrewService.save(movieCrewEntity);
-            movieCrewEntitySet.add(movieCrewEntity);
+        movieDto.getStars().stream().forEach(starDto -> {
+            extractAndMergeProdInfo(prodInfoSet, finalNewMovie, prodCrewMapper.toEntity(starDto), Role.STAR);
         });
 
-        movieDto.getStars().stream().forEach(personDto -> {
-            Optional<PersonEntity> savedPerson = personService.findOne(personDto.getId());
+        ProdCrewDto directorDto = movieDto.getDirector();
+        if(directorDto != null)
+            extractAndMergeProdInfo(prodInfoSet, finalNewMovie, prodCrewMapper.toEntity(directorDto), Role.DIRECTOR);
 
-            PersonEntity person;
-            if(savedPerson.isEmpty())
-                person = personService.save(personMapper.mapFrom(personDto));
-            else
-                person = savedPerson.get();
+        ProdCrewDto producerDto = movieDto.getProducer();
+        if(producerDto != null)
+            extractAndMergeProdInfo(prodInfoSet, finalNewMovie, prodCrewMapper.toEntity(producerDto), Role.PRODUCER);
 
-            MovieCrewKey key = new MovieCrewKey(finalNewMovie.getId(),person.getId());
-            MovieCrewEntity movieCrewEntity = new MovieCrewEntity(key, finalNewMovie, person, Role.LEAD_ACTOR);
+        finalNewMovie.setProductionInfo(prodInfoSet);
 
-            movieCrewEntity = movieCrewService.save(movieCrewEntity);
-            movieCrewEntitySet.add(movieCrewEntity);
-        });
+        return new ResponseEntity<>(movieMapper.toFullDto(finalNewMovie), HttpStatus.CREATED);
+    }
 
-        finalNewMovie.setMovieCrew(movieCrewEntitySet);
+    private void extractAndMergeProdInfo(Set<ProdInfoEntity> prodInfoSet, MovieEntity movie, ProdCrewEntity prodCrew, Role role) {
+        if(movie == null || prodCrew == null)
+            return;
 
-        return new ResponseEntity<>(movieMapper.mapTo(finalNewMovie), HttpStatus.CREATED);
+        ProdCrewEntity savedProdCrew = prodCrewService.save(prodCrew);
+
+        ProductionPK productionPK = new ProductionPK(movie.getId(), savedProdCrew.getId());
+        ProdInfoEntity prodInfoEntity = new ProdInfoEntity(productionPK, movie, savedProdCrew, role);
+
+        prodInfoService.save(prodInfoEntity);
+        prodInfoSet.add(prodInfoEntity);
     }
 }

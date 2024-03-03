@@ -2,7 +2,10 @@ package fr.btn.BookMyTicketAPI.enums;
 
 public enum Role {
     DIRECTOR("D"),
-    LEAD_ACTOR("S");
+    STAR("S"),
+    PRODUCER("P"),
+    MEMBER("MEMBER"),
+    ADMIN("ADMIN");
 
     private String code;
 

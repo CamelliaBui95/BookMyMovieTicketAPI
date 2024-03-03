@@ -1,18 +1,15 @@
 package fr.btn.BookMyTicketAPI;
 
-import fr.btn.BookMyTicketAPI.domain.dto.*;
-import fr.btn.BookMyTicketAPI.domain.dto.embeddedDtoKeys.MovieCrewKeyDto;
-import fr.btn.BookMyTicketAPI.domain.entities.*;
-import fr.btn.BookMyTicketAPI.domain.entities.embeddedKeys.MovieCrewKey;
-import fr.btn.BookMyTicketAPI.enums.Role;
-import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
-import org.springframework.format.annotation.DateTimeFormat;
+import fr.btn.BookMyTicketAPI.dto.GenreDto;
+import fr.btn.BookMyTicketAPI.dto.MovieDto;
+import fr.btn.BookMyTicketAPI.dto.NationDto;
+import fr.btn.BookMyTicketAPI.dto.ProdCrewDto;
+import fr.btn.BookMyTicketAPI.entities.GenreEntity;
+import fr.btn.BookMyTicketAPI.entities.MovieEntity;
+import fr.btn.BookMyTicketAPI.entities.NationEntity;
+import fr.btn.BookMyTicketAPI.entities.ProdCrewEntity;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 public class TestDataUtils {
     private TestDataUtils() { }
@@ -28,22 +25,6 @@ public class TestDataUtils {
         return GenreDto.builder()
                 .id(id)
                 .name(name)
-                .build();
-    }
-
-    public static PersonEntity createPersonEntity(Long id, String firstname, String lastname) {
-        return PersonEntity.builder()
-                .id(id)
-                .firstname(firstname)
-                .lastname(lastname)
-                .build();
-    }
-
-    public static PersonDto createPersonDto(Long id, String firstname, String lastname) {
-        return PersonDto.builder()
-                .id(id)
-                .firstname(firstname)
-                .lastname(lastname)
                 .build();
     }
 
@@ -83,27 +64,17 @@ public class TestDataUtils {
                 .build();
     }
 
-    public static MovieCrewEntity createMovieCrewEntity(Long movieId, Long personId, Role role) {
-        MovieCrewKey crewKey = MovieCrewKey.builder()
-                .movieId(movieId)
-                .personId(personId)
-                .build();
-
-        return MovieCrewEntity.builder()
-                .id(crewKey)
-                .role(role)
+    public static ProdCrewEntity createProdCrewEntity(Long id, String name) {
+        return ProdCrewEntity.builder()
+                .id(id)
+                .name(name)
                 .build();
     }
 
-    public static MovieCrewDto createMovieCrewDto(Long movieId, Long personId, Role role) {
-        MovieCrewKeyDto crewKey = MovieCrewKeyDto.builder()
-                .movieId(movieId)
-                .personId(personId)
-                .build();
-
-        return MovieCrewDto.builder()
-                .id(crewKey)
-                .role(role)
+    public static ProdCrewDto createProdDto(Long id, String name) {
+        return ProdCrewDto.builder()
+                .id(id)
+                .name(name)
                 .build();
     }
 

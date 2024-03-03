@@ -1,9 +1,10 @@
 package fr.btn.BookMyTicketAPI.controllers;
 
-import fr.btn.BookMyTicketAPI.domain.dto.NationDto;
-import fr.btn.BookMyTicketAPI.domain.entities.NationEntity;
+import fr.btn.BookMyTicketAPI.dto.NationDto;
+import fr.btn.BookMyTicketAPI.entities.NationEntity;
 import fr.btn.BookMyTicketAPI.mappers.Mapper;
 import fr.btn.BookMyTicketAPI.services.impl.NationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@Tag(name="Nations")
 public class NationController {
     private Mapper<NationEntity, NationDto> nationMapper;
     private NationService nationService;
@@ -23,26 +25,26 @@ public class NationController {
     }
 
     @PostMapping("/nations")
-    public ResponseEntity<NationDto> createNation(@RequestBody NationDto nationDto) {
+    public ResponseEntity<NationDto> post(@RequestBody NationDto nationDto) {
         if(nationDto == null || nationDto.getCode().length() != 2 || nationDto.getName().isEmpty())
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        NationEntity nationEntity = nationMapper.mapFrom(nationDto);
+        NationEntity nationEntity = nationMapper.toEntity(nationDto);
         NationEntity savedNationEntity = nationService.save(nationEntity);
 
-        return new ResponseEntity<>(nationMapper.mapTo(savedNationEntity), HttpStatus.CREATED);
+        return new ResponseEntity<>(nationMapper.toDto(savedNationEntity), HttpStatus.CREATED);
     }
 
     @GetMapping("/nations")
-    public ResponseEntity<List<NationDto>> listNations() {
+    public ResponseEntity<List<NationDto>> getAll() {
         List<NationEntity> nationEntities = nationService.findAll();
-        List<NationDto> nationDtos = nationEntities.stream().map(nationMapper::mapTo).collect(Collectors.toList());
+        List<NationDto> nationDtos = nationEntities.stream().map(nationMapper::toDto).collect(Collectors.toList());
 
         return new ResponseEntity<>(nationDtos, HttpStatus.OK);
     }
 
     @GetMapping("/nations/{code}")
-    public ResponseEntity<NationDto> getNation(@PathVariable("code") String code) {
+    public ResponseEntity<NationDto> getByCode(@PathVariable("code") String code) {
         if(code == null || code.length() != 2)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
@@ -51,26 +53,26 @@ public class NationController {
         if(foundNation.isEmpty())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        NationDto nationDto = nationMapper.mapTo(foundNation.get());
+        NationDto nationDto = nationMapper.toDto(foundNation.get());
 
         return new ResponseEntity<>(nationDto, HttpStatus.OK);
     }
 
     @PutMapping("/nations/{code}")
-    public ResponseEntity<NationDto> updateNation(@PathVariable("code") String code, @RequestBody NationDto nationDto) {
+    public ResponseEntity<NationDto> update(@PathVariable("code") String code, @RequestBody NationDto nationDto) {
         if(code == null || code.length() != 2 || !code.equalsIgnoreCase(nationDto.getCode()))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         if(!nationService.doesExist(code))
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        NationEntity nationEntity = nationMapper.mapFrom(nationDto);
+        NationEntity nationEntity = nationMapper.toEntity(nationDto);
         nationEntity.setCode(code.toUpperCase());
 
 
         NationEntity updatedNation = nationService.save(nationEntity);
 
-        return new ResponseEntity<>(nationMapper.mapTo(updatedNation), HttpStatus.OK);
+        return new ResponseEntity<>(nationMapper.toDto(updatedNation), HttpStatus.OK);
     }
 
     @DeleteMapping("/nations/{code}")

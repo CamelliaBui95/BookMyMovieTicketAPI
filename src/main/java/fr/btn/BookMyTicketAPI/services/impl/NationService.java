@@ -1,10 +1,8 @@
 package fr.btn.BookMyTicketAPI.services.impl;
 
-import fr.btn.BookMyTicketAPI.domain.dto.NationDto;
-import fr.btn.BookMyTicketAPI.domain.entities.NationEntity;
-import fr.btn.BookMyTicketAPI.mappers.Mapper;
+import fr.btn.BookMyTicketAPI.entities.NationEntity;
 import fr.btn.BookMyTicketAPI.repositories.NationRepository;
-import fr.btn.BookMyTicketAPI.services.ApiService;
+import fr.btn.BookMyTicketAPI.services.AppService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-public class NationService implements ApiService<NationEntity, String> {
+public class NationService implements AppService<NationEntity, String> {
     private NationRepository nationRepository;
 
     public NationService(NationRepository nationRepository) {
@@ -22,10 +20,9 @@ public class NationService implements ApiService<NationEntity, String> {
 
     @Override
     public NationEntity save(NationEntity nationEntity) {
-        if(doesExist(nationEntity.getCode()))
-            return findOne(nationEntity.getCode()).get();
+        Optional<NationEntity> found = findOne(nationEntity.getCode());
 
-        return nationRepository.save(nationEntity);
+        return found.orElseGet(() -> nationRepository.save(nationEntity));
     }
 
     @Override
@@ -44,7 +41,7 @@ public class NationService implements ApiService<NationEntity, String> {
     }
 
     @Override
-    public NationEntity partialUpdate(String code, NationEntity nationEntity) {
+    public NationEntity partialUpdate(String id, NationEntity nationEntity) {
         return null;
     }
 
